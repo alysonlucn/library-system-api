@@ -3,7 +3,9 @@ import {
     PrimaryGeneratedColumn,
     Column,
     CreateDateColumn,
+    OneToMany,
 }  from 'typeorm';
+import { Loan } from './Loan';
 
 @Entity()
 export class Book {
@@ -18,6 +20,9 @@ export class Book {
 
     @Column({ default: true })
     available!: boolean;
+
+    @OneToMany(() => Loan, (loan) => loan.book)
+    loans!: Loan[];
 
     @CreateDateColumn()
     createdAt!: Date;
