@@ -6,5 +6,6 @@ const loanController = new LoanController();
 
 router.post('/register', (req, res) => loanController.create(req, res));
 router.post('/return/:loanId', (req, res) => loanController.return(req, res));
+router.get('/list', (req, res) => loanController.list(req, res));
 
 export default router;

@@ -1,6 +1,7 @@
 import { Loan } from '../entities/Loan';
 import { CreateLoanService } from '../services/create-loan-service';
 import { ReturnLoanService } from '../services/returned-loan-service';
+import { ListLoanService } from '../services/list-loan-service';
 
 export class LoanController {
   async create(req: any, res: any) {
@@ -31,6 +32,17 @@ export class LoanController {
       });
 
       res.status(200).json(loan);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  async list(req: any, res: any) {
+    try {
+      const listLoanService = new ListLoanService();
+      const loans: Loan[] = await listLoanService.execute();
+
+      res.status(200).json(loans);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }
