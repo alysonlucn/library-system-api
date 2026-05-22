@@ -1,5 +1,6 @@
 import { Loan } from '../entities/Loan';
 import { CreateLoanService } from '../services/create-loan-service';
+import { ReturnLoanService } from '../services/returned-loan-service';
 
 export class LoanController {
   async create(req: any, res: any) {
@@ -13,6 +14,23 @@ export class LoanController {
       });
 
       res.status(201).json(loan);
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
+    }
+  }
+
+  async return(req: any, res: any) {
+    try {
+      const { loanId } = req.params;
+      const { returnDate } = req.body;
+
+      const returnLoanService = new ReturnLoanService();
+      const loan: Loan = await returnLoanService.execute({
+        loanId: parseInt(loanId, 10),
+        returnDate: returnDate ? new Date(returnDate) : undefined,
+      });
+
+      res.status(200).json(loan);
     } catch (error: any) {
       res.status(400).json({ error: error.message });
     }

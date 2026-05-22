@@ -5,5 +5,6 @@ const router = express.Router();
 const loanController = new LoanController();
 
 router.post('/register', (req, res) => loanController.create(req, res));
+router.post('/return/:loanId', (req, res) => loanController.return(req, res));
 
 export default router;
