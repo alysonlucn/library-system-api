@@ -4,8 +4,8 @@ import { BookController } from '../controllers/book.controller';
 const router = express.Router();
 const bookController = new BookController();
 
-router.post('/register', (req, res) => bookController.create(req, res));
-router.get('/', (req, res) => bookController.list(req, res));
-router.get('/:id', (req, res) => bookController.findById(req, res));
+router.post('/register', (req, res, next) => bookController.create(req, res, next));
+router.get('/', (req, res, next) => bookController.list(req, res, next));
+router.get('/:id', (req, res, next) => bookController.findById(req, res, next));
 
 export default router;

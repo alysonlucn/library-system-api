@@ -1,5 +1,6 @@
 import { bookRepository } from '../repositories/book-repository';
 import { Book } from '../entities/Book';
+import { AppError } from '../errors/AppError';
 
 interface CreateBookDTO {
   title: string;
@@ -12,15 +13,15 @@ export class CreateBookService {
     author,
   }: CreateBookDTO): Promise<Book> {
     if (!title || !author) {
-      throw new Error("All fields are required");
+      throw new AppError('Todos os campos são obrigatórios');
     }
 
     if(title.length < 3) {
-      throw new Error("Title must be at least 3 characters long");
+      throw new AppError('O título deve ter pelo menos 3 caracteres');
     }
 
     if(author.length < 3) {
-      throw new Error("Author must be at least 3 characters long");
+      throw new AppError('O autor deve ter pelo menos 3 caracteres');
     }
 
     const book = bookRepository.create({

@@ -4,7 +4,7 @@ import { ListBookService } from '../services/list-book-service';
 import { FindBookByIdService } from '../services/find-book-id-service';
 
 export class BookController {
-  async create(req: any, res: any) {
+  async create(req: any, res: any, next: any) {
     try {
       const { title, author } = req.body;
 
@@ -16,22 +16,22 @@ export class BookController {
 
       res.status(201).json(book);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async list(req: any, res: any) {
+  async list(req: any, res: any, next: any) {
     try {
       const listBookService = new ListBookService();
       const books: Book[] = await listBookService.execute();
 
       res.status(200).json(books);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async findById(req: any, res: any) {
+  async findById(req: any, res: any, next: any) {
     try {
       const { id } = req.params;
       const findBookByIdService = new FindBookByIdService();
@@ -39,7 +39,7 @@ export class BookController {
 
       res.status(200).json(book);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 }

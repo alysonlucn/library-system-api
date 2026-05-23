@@ -4,6 +4,7 @@ import { bookRepository } from '../repositories/book-repository';
 import { UserRepository } from '../repositories/user-repository';
 import { Book } from '../entities/Book';
 import { User } from '../entities/User';
+import { AppError } from '../errors/AppError';
 
 interface CreateLoanDTO {
   bookId: number;
@@ -15,15 +16,15 @@ export class CreateLoanService {
   async execute({ bookId, userId, loanDate }: CreateLoanDTO): Promise<Loan> {
     const book: Book | null = await bookRepository.findOneBy({ id: bookId });
     if (!book) {
-      throw new Error('Book not found');
+      throw new AppError('Livro não encontrado', 404);
     }
     if (!book.available) {
-      throw new Error('Book is not available for loan');
+      throw new AppError('Livro indisponível para empréstimo');
     }
 
     const user: User | null = await UserRepository.findOneBy({ id: userId });
     if (!user) {
-      throw new Error('User not found');
+      throw new AppError('Usuário não encontrado', 404);
     }
 
     const loan: Loan = LoanRepository.create({

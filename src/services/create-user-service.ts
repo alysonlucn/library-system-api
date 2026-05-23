@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import { User } from '../entities/User';
 import { UserRepository } from '../repositories/user-repository';
+import { AppError } from '../errors/AppError';
 
 interface CreateUserDTO {
   username: string;
@@ -15,17 +16,17 @@ export class CreateUserService {
     password,
   }: CreateUserDTO): Promise<User> {
     if (!username || !email || !password) {
-      throw new Error("All fields are required");
+      throw new AppError('Todos os campos são obrigatórios');
     }
 
     if (password.length < 6) {
-      throw new Error("Password must be at least 6 characters");
+      throw new AppError('A senha deve ter pelo menos 6 caracteres');
     }
 
     const existingUser = await UserRepository.findOne({ where: { email } });
 
     if (existingUser) {
-      throw new Error('Email already in use');
+      throw new AppError('E-mail já cadastrado');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

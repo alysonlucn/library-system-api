@@ -1,5 +1,6 @@
 import { Loan } from '../entities/Loan';
 import { LoanRepository } from '../repositories/loan-repository';
+import { AppError } from '../errors/AppError';
 
 interface ReturnLoanDTO {
   loanId: number;
@@ -14,7 +15,7 @@ export class ReturnLoanService {
     });
     
     if (!loan) {
-      throw new Error('Loan not found');
+      throw new AppError('Empréstimo não encontrado', 404);
     }
 
     loan.returnDate = returnDate || new Date();

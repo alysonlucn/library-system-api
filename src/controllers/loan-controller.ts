@@ -4,7 +4,7 @@ import { ReturnLoanService } from '../services/returned-loan-service';
 import { ListLoanService } from '../services/list-loan-service';
 
 export class LoanController {
-  async create(req: any, res: any) {
+  async create(req: any, res: any, next: any) {
     try {
       const { bookId, userId } = req.body;
 
@@ -16,11 +16,11 @@ export class LoanController {
 
       res.status(201).json(loan);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async return(req: any, res: any) {
+  async return(req: any, res: any, next: any) {
     try {
       const { loanId } = req.params;
       const { returnDate } = req.body;
@@ -33,18 +33,18 @@ export class LoanController {
 
       res.status(200).json(loan);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 
-  async list(req: any, res: any) {
+  async list(req: any, res: any, next: any) {
     try {
       const listLoanService = new ListLoanService();
       const loans: Loan[] = await listLoanService.execute();
 
       res.status(200).json(loans);
     } catch (error: any) {
-      res.status(400).json({ error: error.message });
+      next(error);
     }
   }
 }
