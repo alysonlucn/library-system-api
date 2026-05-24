@@ -5,6 +5,8 @@ import { UserRepository } from '../repositories/user-repository';
 import { Book } from '../entities/Book';
 import { User } from '../entities/User';
 import { AppError } from '../errors/AppError';
+import { z } from 'zod';
+import { formatZodIssues } from '../utils/format-zod-error';
 
 interface CreateLoanDTO {
   bookId: number;
@@ -12,9 +14,28 @@ interface CreateLoanDTO {
   loanDate?: Date;
 }
 
+const createLoanSchema = z.object({
+  bookId: z.coerce.number().int().positive('bookId deve ser um inteiro positivo'),
+  userId: z.coerce.number().int().positive('userId deve ser um inteiro positivo'),
+  loanDate: z
+    .preprocess((value) => {
+      if (value === '' || value === null || value === undefined) {
+        return undefined;
+      }
+      return value;
+    }, z.coerce.date().optional()),
+});
+
 export class CreateLoanService {
   async execute({ bookId, userId, loanDate }: CreateLoanDTO): Promise<Loan> {
-    const book: Book | null = await bookRepository.findOneBy({ id: bookId });
+    const parsedInput = createLoanSchema.safeParse({ bookId, userId, loanDate });
+    if (!parsedInput.success) {
+      throw new AppError(formatZodIssues(parsedInput.error.issues));
+    }
+
+    const validatedData = parsedInput.data;
+
+    const book: Book | null = await bookRepository.findOneBy({ id: validatedData.bookId });
     if (!book) {
       throw new AppError('Livro não encontrado', 404);
     }
@@ -22,7 +43,7 @@ export class CreateLoanService {
       throw new AppError('Livro indisponível para empréstimo');
     }
 
-    const user: User | null = await UserRepository.findOneBy({ id: userId });
+    const user: User | null = await UserRepository.findOneBy({ id: validatedData.userId });
     if (!user) {
       throw new AppError('Usuário não encontrado', 404);
     }
@@ -30,7 +51,7 @@ export class CreateLoanService {
     const loan: Loan = LoanRepository.create({
       book,
       user,
-      loanDate: loanDate || new Date(),
+      loanDate: validatedData.loanDate || new Date(),
     });
 
     book.available = false;
