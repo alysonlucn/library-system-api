@@ -1,4 +1,5 @@
 import { Loan } from '../entities/Loan';
+import { AppError } from '../errors/AppError';
 import { CreateLoanService } from '../services/create-loan-service';
 import { ReturnLoanService } from '../services/returned-loan-service';
 import { ListLoanService } from '../services/list-loan-service';
@@ -6,7 +7,12 @@ import { ListLoanService } from '../services/list-loan-service';
 export class LoanController {
   async create(req: any, res: any, next: any) {
     try {
-      const { bookId, userId } = req.body;
+      const { bookId } = req.body;
+      const userId = req.user?.id;
+
+      if (!userId) {
+        throw new AppError('Usuario nao autenticado', 401);
+      }
 
       const createLoanService = new CreateLoanService();
       const loan: Loan = await createLoanService.execute({
